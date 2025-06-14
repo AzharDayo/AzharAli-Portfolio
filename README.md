@@ -3,9 +3,11 @@
 ## Overview
 A modern, responsive portfolio website showcasing my skills as a Software Developer and Mobile App Specialist. Built with clean HTML5, CSS3, and JavaScript.
 
-## 🚀 Live Demo
-- **Main Portfolio**: `index.html` - Modular version with separate CSS/JS files
-- **Standalone Version**: `portfolio-standalone.html` - Complete self-contained version
+## 🚀 Live Website Links
+🌐 **Click here to view my portfolio:** 
+- **Live Website**: [https://azhardayo.github.io/AzharAli-Portfolio/](https://azhardayo.github.io/AzharAli-Portfolio/)
+- **Standalone Version**: [https://azhardayo.github.io/AzharAli-Portfolio/portfolio-standalone.html](https://azhardayo.github.io/AzharAli-Portfolio/portfolio-standalone.html)
+- **GitHub Repository**: [https://github.com/AzharDayo/AzharAli-Portfolio](https://github.com/AzharDayo/AzharAli-Portfolio)
 
 ## 📁 Project Structure
 ```
