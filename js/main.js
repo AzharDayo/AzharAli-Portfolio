@@ -1,94 +1,107 @@
-// Mobile navigation toggle
+// Strict mode for better error catching and security
+'use strict';
+
+// Sanitize input function
+function sanitizeInput(input) {
+    const div = document.createElement('div');
+    div.textContent = input;
+    return div.innerHTML;
+}
+
+// Mobile navigation toggle with error handling
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 
-hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
-});
+if (hamburger && navMenu) {
+    hamburger.addEventListener('click', () => {
+        try {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        } catch (error) {
+            console.error('Navigation toggle error:', error);
+        }
+    });
 
-// Close mobile menu when clicking on a link
-document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-}));
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
+        try {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+        } catch (error) {
+            console.error('Menu close error:', error);
+        }
+    }));
+}
 
-// Smooth scrolling for navigation links
+// Smooth scrolling with enhanced security
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
+        try {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').slice(1);
+            if (!targetId) return;
+            
+            const target = document.getElementById(targetId);
+            if (target) {
+                const offsetTop = target.offsetTop - 70;
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        } catch (error) {
+            console.error('Smooth scroll error:', error);
+        }
+    });
+});
+
+// Contact form handling with security measures
+const form = document.querySelector('.contact-form');
+if (form) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            const offsetTop = target.offsetTop - 70; // Account for fixed header
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
-        }
-    });
-});
-
-// Active navigation highlighting on scroll
-window.addEventListener('scroll', () => {
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-link');
-    
-    let current = '';
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop - 100;
-        const sectionHeight = section.offsetHeight;
         
-        if (window.pageYOffset >= sectionTop && window.pageYOffset < sectionTop + sectionHeight) {
-            current = section.getAttribute('id');
+        try {
+            // Get and sanitize form data
+            const formData = new FormData(this);
+            const name = sanitizeInput(formData.get('name'));
+            const email = sanitizeInput(formData.get('email'));
+            const subject = sanitizeInput(formData.get('subject'));
+            const message = sanitizeInput(formData.get('message'));
+            
+            // Input validation
+            if (!name || !email || !subject || !message) {
+                alert('Please fill in all fields.');
+                return;
+            }
+            
+            // Email validation with strict regex
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            const submitBtn = this.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            // Simulated form submission with timeout for demo
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            alert(`Thank you ${name}! Your message has been received. I'll get back to you at ${email} soon.`);
+            this.reset();
+            
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+            
+        } catch (error) {
+            console.error('Form submission error:', error);
+            alert('An error occurred. Please try again later.');
         }
     });
-    
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
-            link.classList.add('active');
-        }
-    });
-});
-
-// Enhanced contact form handling with personalized response
-document.querySelector('.contact-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(this);
-    const name = formData.get('name');
-    const email = formData.get('email');
-    const subject = formData.get('subject');
-    const message = formData.get('message');
-    
-    // Simple validation
-    if (!name || !email || !subject || !message) {
-        alert('Please fill in all fields.');
-        return;
-    }
-    
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        alert('Please enter a valid email address.');
-        return;
-    }
-    
-    // Simulate form submission (in real project, you'd send to a server)
-    const submitBtn = this.querySelector('.submit-btn');
-    const originalText = submitBtn.textContent;
-    
-    submitBtn.textContent = 'Sending...';
-    submitBtn.disabled = true;
-    
-    setTimeout(() => {
-        alert(`Thank you ${name}! Your message has been sent successfully. I'll get back to you soon at ${email}.`);
-        this.reset();
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }, 1500);
-});
+}
 
 // Animate elements on scroll
 const observerOptions = {
@@ -119,14 +132,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Add typing effect to hero text
 function typeWriter(element, text, speed = 100) {
+    if (!element || typeof text !== 'string') return;
+    
     let i = 0;
     element.innerHTML = '';
     
     function type() {
-        if (i < text.length) {
-            element.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
+        try {
+            if (i < text.length) {
+                element.innerHTML += sanitizeInput(text.charAt(i));
+                i++;
+                setTimeout(type, speed);
+            }
+        } catch (error) {
+            console.error('Typing effect error:', error);
         }
     }
     type();
@@ -134,24 +153,28 @@ function typeWriter(element, text, speed = 100) {
 
 // Initialize typing effect when page loads
 window.addEventListener('load', () => {
-    const heroTitle = document.querySelector('.hero-text h1');
-    const heroSubtitle = document.querySelector('.hero-text p');
-    const heroDescription = document.querySelector('.hero-description p');
-    
-    if (heroTitle && heroSubtitle && heroDescription) {
-        const titleText = heroTitle.textContent;
-        const subtitleText = heroSubtitle.textContent;
-        const descriptionText = heroDescription.textContent;
+    try {
+        const heroTitle = document.querySelector('.hero-text h1');
+        const heroSubtitle = document.querySelector('.hero-text p');
+        const heroDescription = document.querySelector('.hero-description p');
         
-        typeWriter(heroTitle, titleText, 80);
-        
-        setTimeout(() => {
-            typeWriter(heroSubtitle, subtitleText, 60);
-        }, titleText.length * 80 + 500);
-        
-        setTimeout(() => {
-            typeWriter(heroDescription, descriptionText, 40);
-        }, (titleText.length * 80) + (subtitleText.length * 60) + 1000);
+        if (heroTitle && heroSubtitle && heroDescription) {
+            const titleText = heroTitle.textContent;
+            const subtitleText = heroSubtitle.textContent;
+            const descriptionText = heroDescription.textContent;
+            
+            typeWriter(heroTitle, titleText, 80);
+            
+            setTimeout(() => {
+                typeWriter(heroSubtitle, subtitleText, 60);
+            }, titleText.length * 80 + 500);
+            
+            setTimeout(() => {
+                typeWriter(heroDescription, descriptionText, 40);
+            }, (titleText.length * 80) + (subtitleText.length * 60) + 1000);
+        }
+    } catch (error) {
+        console.error('Typing initialization error:', error);
     }
 });
 
@@ -180,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Add scroll-to-top button
 const scrollToTopBtn = document.createElement('button');
 scrollToTopBtn.innerHTML = '↑';
+scrollToTopBtn.setAttribute('aria-label', 'Scroll to top');
 scrollToTopBtn.classList.add('scroll-to-top');
 scrollToTopBtn.style.cssText = `
     position: fixed;
@@ -201,21 +225,38 @@ scrollToTopBtn.style.cssText = `
 
 document.body.appendChild(scrollToTopBtn);
 
-// Show/hide scroll to top button
+// Show/hide scroll to top button with throttling
+let scrollTimeout;
 window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 300) {
-        scrollToTopBtn.style.opacity = '1';
-        scrollToTopBtn.style.visibility = 'visible';
-    } else {
-        scrollToTopBtn.style.opacity = '0';
-        scrollToTopBtn.style.visibility = 'hidden';
+    if (scrollTimeout) {
+        window.cancelAnimationFrame(scrollTimeout);
     }
+    
+    scrollTimeout = window.requestAnimationFrame(() => {
+        try {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.style.opacity = '1';
+                scrollToTopBtn.style.visibility = 'visible';
+            } else {
+                scrollToTopBtn.style.opacity = '0';
+                scrollToTopBtn.style.visibility = 'hidden';
+            }
+        } catch (error) {
+            console.error('Scroll button visibility error:', error);
+        }
+    });
 });
 
-// Scroll to top functionality
+// Scroll to top with smooth behavior
 scrollToTopBtn.addEventListener('click', () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
+    try {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    } catch (error) {
+        console.error('Scroll to top error:', error);
+        // Fallback for older browsers
+        window.scrollTo(0, 0);
+    }
 });

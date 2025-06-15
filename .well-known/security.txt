@@ -1,0 +1,1 @@
+Contact: mailto:azharalidayo10@gmail.com\nExpires: 2025-12-31T23:59:59.000Z\nPreferred-Languages: en, ur\nCanonical: https://azhardayo.github.io/AzharAli-Portfolio/.well-known/security.txt
