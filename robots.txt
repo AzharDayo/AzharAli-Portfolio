@@ -1,0 +1,13 @@
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Point to sitemap
+Sitemap: https://azhardayo.github.io/AzharAli-Portfolio/sitemap.xml
+
+# Security file locations
+Allow: /.well-known/security.txt
+Allow: /google91c017841c27e224.html
+
+# Optimize crawling
+Crawl-delay: 1
